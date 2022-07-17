@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.dao.User_Dao">
+
+    <insert id="insert_User">
+        insert into user(username,password,phone,email,type) values (#{username},
+        #{password},#{phone},#{email},#{type})
+    </insert>
+
+    <select id="select_User" resultType="com.chen.entity.User">
+        select id,username,password,phone,email,type from user where phone=#{phone} or username=#{name} or email=#{email}
+    </select>
+
+    <update id="update_User">
+        <if test="password!=null">
+            update user set password = #{password} where username = #{username}
+        </if>
+        <if test="phone!=null">
+            update user set phone = #{phone} where username = #{username}
+        </if>
+        <if test="email!=null">
+            update user set email = #{email} where username = #{username}
+        </if>
+    </update>
+
+    <select id="back_psd" resultType="com.chen.entity.User">
+        select username,password,phone,email from user where phone = #{phone} or email=#{email}
+    </select>
+
+</mapper>

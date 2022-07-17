@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:padding-left="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/layui.css">
+</head>
+<script src="../../js/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="../../layer-v3.5.1/layer/layer.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btn1").click(function () {
+            layer.prompt({title: '输入任何口令，并确认', formType: 1}, function(pass, index){
+                layer.close(index);
+                layer.prompt({title: '随便写点啥，并确认', formType: 2}, function(text, index){
+                    layer.close(index);
+                    layer.msg('演示完毕！您的口令：'+ pass +'<br>您最后写下了：'+text);
+                });
+            });
+        })
+    })
+</script>
+<body>
+<button id="btn1">点击</button>
+</body>
+</html>

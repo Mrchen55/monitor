@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.dao.Analysis_Dao">
+
+    <insert id="insert_Analysis">
+        insert into data_analysis(date,city,monitor_point,Aqi,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean)
+                values(#{date},#{city},#{monitor_point},#{Aqi},#{SO2_Mean},#{NO2_Mean},#{PM10_Mean},#{PM2_5_Mean},#{O3_Mean},#{CO_Mean})
+    </insert>
+
+    <insert id="insert_Analysis_long">
+        insert into data_analysis_long(date,city,monitor_point,Aqi,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean)
+                values(#{date},#{city},#{monitor_point},#{Aqi},#{SO2_Mean},#{NO2_Mean},#{PM10_Mean},#{PM2_5_Mean},#{O3_Mean},#{CO_Mean})
+    </insert>
+
+    <select id="select_Aqi" resultType="com.chen.entity.Analysis">
+        select distinct city,monitor_point,date,Aqi,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean from data_analysis
+         where city=#{city}  and date BETWEEN #{date} and #{date}' 23:59:59' order by date
+    </select>
+
+    <select id="select_cityAqi" resultType="com.chen.entity.Analysis">
+        select DISTINCT date,city,monitor_point,AQI,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean from data_analysis
+         where city=#{city} order by date desc LIMIT 1
+    </select>
+
+    <select id="select_rangeAqi" resultType="com.chen.entity.Analysis">
+        select distinct city,monitor_point,date,Aqi,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean from data_analysis
+         where city=#{city}  and date BETWEEN #{date} and #{date}' 23:59:59' and Aqi between #{first} and #{end}
+    </select>
+
+    <select id="select_maxAqi" resultType="com.chen.entity.Analysis">
+        select city,monitor_point,date,max(Aqi) aqi,SO2_Mean,NO2_Mean,PM10_Mean,PM2_5_Mean,O3_Mean,CO_Mean from data_analysis
+         where city=#{city}  and date BETWEEN #{date} and #{date}' 23:59:59' order by date
+    </select>
+
+    <select id="select_cityAndDate" resultType="java.lang.Double">
+        select aqi from data_analysis where date =#{date} and city=#{city}
+    </select>
+
+    <update id="update_newAqi">
+        UPDATE data_analysis set ${type}=${polumean},aqi=#{aqi} where date=#{date} and city=#{city}
+    </update>
+
+    <update id="update_newAqi02">
+        UPDATE data_analysis_long set ${type}=${polumean},aqi=#{aqi} where date=#{date} and city=#{city}
+    </update>
+
+    <delete id="delete_analysis" >
+        delete from pollution_temporary where date &lt; #{date}
+    </delete>
+
+</mapper>

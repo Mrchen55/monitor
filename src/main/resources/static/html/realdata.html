@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>实时污染物数据</title>
+    <link rel="stylesheet" href="/css/publicUse.css" type="text/css">
+</head>
+<script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+        $("#btn1").click(function () {
+            $.post("/realdata",{"city":$("#city").val()},
+                function (data) {
+                    // alert(data.length)
+                    $("#tbody").empty()
+                    if(data.length === 0){
+                        $("#tbody").append("<tr><td colspan='10' align='center'>" +
+                            "空的，请选择其他日期或城市</td></tr>>")
+                    }
+                    $.each(data,function (index,ele) {
+                        $("#tbody").append("<tr>")
+                        $("#tbody").append("<td>"+ele.date+"</td>")
+                        $("#tbody").append("<td>"+ele.city+"</td>")
+                        $("#tbody").append("<td>"+ele.monitor_point+"</td>")
+                        $("#tbody").append("<td>"+ele.so2+"</td>")
+                        $("#tbody").append("<td>"+ele.no2+"</td>")
+                        $("#tbody").append("<td>"+ele.pm10+"</td>")
+                        $("#tbody").append("<td>"+ele.pm2_5+"</td>")
+                        $("#tbody").append("<td>"+ele.o3+"</td>")
+                        $("#tbody").append("<td>"+ele.co+"</td>")
+                        $("#tbody").append("</tr>")
+                    })
+                },"json")
+        })
+    })
+</script>
+<body>
+<div>
+    <span style="font-family: 宋体;font-size: 20px">选择城市：</span>&nbsp;
+    <select id="city" style="width: 110px;height: 30px">
+        <option></option>
+        <option value="江门">江门</option>
+        <option value="广州">广州</option>
+        <option value="佛山">佛山</option>
+        <option value="珠海">珠海</option>
+    </select>
+    <input id="btn1" type="button" value="确认">
+</div>
+<br>
+<div align="center">
+    <br>
+    <div>最多只显示30个实时数据</div>
+    <table id="tab" style="font-size: 20px" border="1">
+        <thead style="color:rebeccapurple" align="center">
+            <tr>
+                <td style="width: 300px">时间</td>
+                <td style="width: 100px">城市</td>
+                <td style="width: 100px">监测点</td>
+                <td style="width: 60px">SO2(μg)</td>
+                <td style="width: 60px">NO2(μg)</td>
+                <td style="width: 60px">PM10(μg)</td>
+                <td style="width: 60px">PM2.5(μg)</td>
+                <td style="width: 60px">O3(μg)</td>
+                <td style="width: 60px">CO(mg)</td>
+            </tr>
+        </thead>
+        <tbody id="tbody" align="center">
+            <tr id="tr01"><td colspan="9" align="center">当前没有城市选择</td></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script src="../js/effects.js" type="text/javascript"></script>
+</html>

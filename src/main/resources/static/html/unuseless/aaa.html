@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="../../js/flexible.js"></script>
+<style>
+/*<!--    用于设置最小宽度和最大宽度时再变化窗口也不会影响rem的自适应屏幕的大小-->*/
+    /*把屏幕约束在1024和1920*/
+    @media screen and (max-width: 1024px) {
+        html{
+            font-size: 42.66px!important;
+        }
+    }
+    @media screen and (min-width: 1920px) {
+        html{
+            font-size: 80px!important;
+        }
+    }
+    div{
+        width:3.5rem;
+        height:3.5rem;
+        background-color: darkblue;
+    }</style>
+<body>
+<div>
+
+</div>
+123456
+
+<span class="icon-angellist">
+    haha
+</span>
+</body>
+</html>

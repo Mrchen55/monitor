@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员修改污染物数据页面</title>
+    <link href="/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/layui-v2.6.8/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var pageNum = 1;    //页数
+        var pageSize = 15;  // 一页几条
+        var allSize = 15;   //总数据,这个值和最大页数可以不赋值，因为在第一次请求的时候，就会覆盖这两个值了
+        var maxpage = 3;    //最大页数
+        $("#query").click(function () {
+            if($("#city").val()!="" && $("#query_date").val()!=""){
+                $.post("/show_polu",
+                    {"city":$("#city").val(),"query_date":$("#query_date").val(),
+                        "pageNum":pageNum,"pageSize":pageSize
+                    },
+                    function (data){
+                        allSize = data.Allsize;
+                        maxpage = Math.ceil(allSize/pageSize);
+                        $("#tbody").empty()
+                        if(data.list.length === 0){
+                            $("#tbody").append("<tr><td colspan='10' align='center'>空的，请选择其他日期或城市</td></tr>>")
+                            $("#span01").text("")
+                        }else {
+                            $("#span01").text("一共有"+data.Allsize+"条数据,共"+maxpage+"页,当前第"+pageNum+"页")
+                        }
+                        $.each(data.list,function (index,ele) {
+                            $("#tbody").append("<tr>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.date+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.city+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.monitor_point+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.so2+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.no2+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.pm10+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.pm2_5+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.o3+"</td>")
+                            $("#tbody").append("<td style='font-size: 18px'>"+ele.co+"</td>")
+                            $("#tbody").append("</tr>")
+                        })
+                    },"json")
+
+            }else {
+                alert("请先选择城市和时间")
+            }
+        })
+        $("#btnup").click(function () {
+            pageNum = pageNum<=1?1:pageNum-1;
+            $("#query").click();
+        })
+        $("#btndown").click(function () {
+            pageNum = pageNum>=maxpage?maxpage:pageNum+1;
+            $("#query").click();
+        })
+        $("#selectPageNums").change(function () {
+            pageSize = $("#selectPageNums").val()
+            $("#query").click();
+        })
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+        layui.use(['layer','laydate'],function () {
+            var layer = layui.layer
+            var laydate = layui.laydate
+            laydate.render({
+                elem: '#date',
+                type: 'datetime'
+            });
+            $("#btn01").click(function () {
+                var match = /^[0-9]{4}-[0-1][0-9]-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/
+                var match02 = /(^[0-9]+[.][0-9]+$)|(^\d*$)/
+                layer.open({
+                    type: 1,
+                    title: "请选择修改的污染物数据",
+                    area: ['50%', '50%'],
+                    btn: ['修改', '取消'],
+                    content: $("#div01"),
+                    yes: function (index, layero) {
+
+                        if(match.test($("#date").val())){
+                            if(match02.test($("#value").val()) && $("#value").val()!=""){
+                                // alert("radio="+$(":radio:checked").val()+" date="+$("#date").val()+" value="+$("#value").val()+" city="+$("#select_city").val())
+                                $.post("/update_polu",{"date":$("#date").val(),"type":$(":radio:checked").val(),"value":$("#value").val(),"update_city":$("#select_city").val()},
+                                    function (data) {
+                                        alert(data)
+                                        layer.close(index);
+                                    })
+                            }else {
+                                alert("数据格式错误，请重新输入")
+                            }
+                        }else {
+                            alert($("#date").val())
+                            alert("日期格式错误，请重新输入")
+                        }
+                    }
+                });
+            })
+        })
+    })
+</script>
+
+<body>
+<div>
+    <br>
+        <span style="font-size: 17px">选择城市和日期:</span>
+        <select id="city" style="width:100px;height: 30px">
+            <option ></option>
+            <option value="江门">江门</option>
+            <option value="佛山">佛山</option>
+            <option value="珠海">珠海</option>
+            <option value="广州">广州</option>
+        </select>
+        <input type="date" id="query_date" >
+        <input id="query" type="button" value="确认">
+
+</div>
+<div align="center">
+    <br>
+    <div style="font-size: 20px">历史污染物数据</div>
+    <table id="tab" style="font-size: 20px;width: 1500px" class="layui-table layui-font-black layui-font-20">
+        <thead style="color:rebeccapurple" align="center">
+        <tr>
+            <td style="width: 300px;font-size: 20px">时间</td>
+            <td style="width: 100px;font-size: 20px">城市</td>
+            <td style="width: 100px;font-size: 20px">监测点</td>
+            <td style="width: 100px;font-size: 20px">SO2(μg)</td>
+            <td style="width: 100px;font-size: 20px">NO2(μg)</td>
+            <td style="width: 100px;font-size: 20px">PM10(μg)</td>
+            <td style="width: 100px;font-size: 20px">PM2.5(μg)</td>
+            <td style="width: 100px;font-size: 20px">O3(μg)</td>
+            <td style="width: 100px;font-size: 20px">CO(mg)</td>
+        </tr>
+        </thead>
+        <tbody id="tbody" align="center">
+        <tr id="tr01"><td colspan="9" align="center">当前没有城市选择</td></tr>
+        </tbody>
+    </table>
+    <div>
+        一页显示几条:
+        <select id="selectPageNums" style="width:62px;height: 30px;font-size: 20px">
+            <option value="15" >15</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;
+        <button id="btnup" value="上一页"  class="layui-btn">上一页</button>
+        <button id="btndown" value="下一页"  class="layui-btn">下一页</button>
+        <span id="span01"></span>
+    </div>
+    <br>
+    <br>
+</div>
+<hr/>
+<span style="font-size: 18px">管理员功能(修改污染物数据) :&nbsp</span><button id="btn01" class="layui-btn" >点击修改</button>
+<div id="div01" style="display: none">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据的时间（分、秒）</label>
+            <div class="layui-input-block">
+                <input type="text" id="date" placeholder="请选择" class="layui-input" style="width: 200px;font-size: 18px">
+                例:2022-04-05 10:20:30
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">城市</label>
+            <div class="layui-input-block">
+                <select id="select_city" lay-filter="aihao">
+                    <option value="江门" selected>江门</option>
+                    <option value="佛山">佛山</option>
+                    <option value="珠海">珠海</option>
+                    <option value="广州">广州</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">污染物类型</label>
+            <div class="layui-input-block">
+                <input type="radio" name='polu' value="SO2" title="SO2" checked>
+                <input type="radio" name='polu' value="NO2" title="NO2" >
+                <input type="radio" name='polu' value="PM2_5" title="PM2.5" >
+                <input type="radio" name='polu' value="PM10" title="PM10" >
+                <input type="radio" name='polu' value="CO" title="CO" >
+                <input type="radio" name='polu' value="O3" title="O3" >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">修改后的值</label>
+            <input type="text" id="value" style="width:200px;height: 30px">
+        </div>
+    </form>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<!--<input type="text" id="value02" style="width:200px;height: 30px">-->
+
+</body>
+
+</html>

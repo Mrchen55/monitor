@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>监控系统</title>
+    <link href="css/publicUse.css" rel="stylesheet" type="text/css" />
+</head>
+<script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="js/flexible.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        if($("#hid01").val()==="用户"){
+            $("#user01").append("<dt><a target='content' href='/download_html?form_city=江门'>下载污染物数据</a></dt><dt>" +
+                "<a target='content' href='/user_account'>用户账号信息</a></dt>")
+        }
+        if($("#hid01").val()==="管理员"){
+            $("#user01").append("<dt><a target='content' href='/download_html?form_city=江门'>下载污染物数据</a></dt><dt>" +
+                "<a target='content' href='/user_account'>用户账号信息</a></dt>")
+            $("#user02").append("<dt><a target=\"content\" href=\"html/download_message.html\">查看下载日志</a></dt>\n" +
+                "<dt><a target=\"content\" href=\"html/data_exception.html\">查看污染物异常数据</a></dt>"+
+                "<dt><a target=\"content\" href=\"html/update_polu.html\">修改污染物数据</a></dt>")
+        }
+    })
+</script>
+<body style="margin: 0">
+<div class="main">
+    <div id="header" class="header">
+        <span>环境质量在线监控系统显示</span>
+    </div>
+    <div id="user_status" class="user_status">
+        <span th:if="${session.username}!=null" th:text="'登录名: '+${session.username}"></span>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        登录状态:<span th:text="${session.status}"></span>
+        &nbsp&nbsp&nbsp
+        <a th:if="${session.username}!=null" th:href="@{'/quit?username='+${session.username}}">退出登录</a>
+        <a th:if="${session.username}==null" th:href="@{/login}">返回登录页面</a>
+        &nbsp&nbsp&nbsp
+    </div>
+    <input type="hidden" id="hid01" th:value="${session.status}">
+    <div id="navigation" class="navigation">
+        <dl>
+            <dt><a target="content" href="html/front_page.html" >首页</a></dt>
+            <dt><a target="content" href="/airquality?city=江门">空气质量情况</a></dt>
+            <dt><a target="content" href="html/realdata.html">实时污染物数据</a></dt>
+            <dt><a target="content" href="html/realdata_charts.html">图表显示实时数据</a></dt>
+            <dt><a target="content" href="html/data_ago.html">历史空气质量情况</a></dt>
+            <dt><a target="content" href="html/data_agocharts.html">图表显示历史空气质量情况</a></dt>
+            <dt><a target="content" href="/knowledge_show">相关知识了解</a></dt>
+        </dl>
+        <dl  id="user01" >
+        </dl>
+<!--        用一个js来判断当前的登录状态，如果是管理员，就显示该项目-->
+        <dl id=user02 >
+        </dl>
+
+    </div>
+    <div id="content" class="content">
+        <iframe name="content" width=100% height=100% scrolling="auto" src="html/front_page.html" frameborder="0" ></iframe>
+    </div>
+</div>
+</body>
+<!--<script src="js/effects.js" type="text/javascript"></script>-->
+</html>

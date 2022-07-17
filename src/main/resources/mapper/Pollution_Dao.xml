@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.dao.Pollution_Dao">
+
+    <select id="select_Pollution" resultType="com.chen.entity.Pollution">
+        select date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO from pollution_temporary
+    </select>
+
+    <insert id="insert_Pollution">
+        insert into pollution_temporary(date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO,hour) values(#{date},
+                         #{city},#{monitor_point},#{SO2},#{NO2},#{PM10},#{PM2_5},#{O3},#{CO},#{hour})
+    </insert>
+
+    <insert id="insert_Pollution_long">
+        insert into pollution_long(date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO,hour) values(#{date},
+                         #{city},#{monitor_point},#{SO2},#{NO2},#{PM10},#{PM2_5},#{O3},#{CO},#{hour})
+    </insert>
+
+    <resultMap id="data_mean" type="com.chen.entity.Analysis">
+        <result column="avg(SO2)" property="SO2_Mean" />
+        <result column="avg(NO2)" property="NO2_Mean" />
+        <result column="avg(PM10)" property="PM10_Mean" />
+        <result column="avg(PM2_5)" property="PM2_5_Mean" />
+        <result column="avg(O3)" property="O3_Mean" />
+        <result column="avg(CO)" property="CO_Mean" />
+    </resultMap>
+    
+    <select id="select_Mean" resultMap="data_mean">
+        SELECT date,city,monitor_point,avg(SO2),avg(no2),avg(PM10),avg(PM2_5),avg(O3),avg(CO),hour
+            FROM pollution_temporary group by city,hour
+    </select>
+
+    <select id="select_PoluMean" resultMap="data_mean">
+        SELECT date,city,monitor_point,avg(SO2),avg(no2),avg(PM10),avg(PM2_5),avg(O3),avg(CO),hour
+        FROM pollution_temporary
+        where date BETWEEN #{date} and #{date}':59:59'
+        group by city
+    </select>
+
+    <select id="output_Excel" resultType="java.lang.String">
+        select 'id',convert('日期' USING gb2312),convert('城市' USING gb2312),convert('监测点' USING gb2312),'SO2','NO2','PM10','PM2.5','O3','CO','hour'
+        union
+        select id,date,convert(city USING gb2312),convert(monitor_point USING gb2312),SO2,NO2,PM10,PM2_5,O3,CO,`hour`
+        from pollution_temporary where city=#{city} and  date between ${startdate} and ${enddate}+1
+        <if test="city=='江门'">
+            into OUTFILE 'D:/table/data/city/JiangMen/${startdate}-${enddate}.xls'
+        </if>
+        <if test="city=='广州'">
+            into OUTFILE 'D:/table/data/city/GuangZhou/${startdate}-${enddate}.xls'
+        </if>
+        <if test="city=='珠海'">
+            into OUTFILE 'D:/table/data/city/ZhuHai/${startdate}-${enddate}.xls'
+        </if>
+        <if test="city=='佛山'">
+            into OUTFILE 'D:/table/data/city/FoShan/${startdate}-${enddate}.xls'
+        </if>
+    </select>
+
+    <select id="select_city" resultType="com.chen.entity.Pollution">
+        select date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO from pollution_temporary
+        where city=#{city} order by date desc limit 30
+    </select>
+
+    <select id="select_city02" resultType="com.chen.entity.Pollution">
+        select date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO from pollution_temporary
+        where city=#{city} order by date limit 30
+    </select>
+
+    <select id="select_cityAndDate" resultType="com.chen.entity.Pollution">
+        select date,city,monitor_point,SO2,NO2,PM10,PM2_5,O3,CO from pollution_temporary
+        where city=#{city} and date BETWEEN #{date} and #{date}' 23:59:59' order by date desc
+    </select>
+
+    <update id="update_data" >
+        UPDATE pollution_temporary set ${type}=${value} where date = #{date} and city=#{city}
+    </update>
+
+    <update id="update_data02" >
+        UPDATE pollution_long set ${type}=${value} where date = #{date} and city=#{city}
+    </update>
+
+    <select id="select_polu_mean" resultType="java.lang.Double">
+        select avg(${type}) from pollution_temporary
+        where  city=#{city} and date BETWEEN #{date} and #{date} ':59:59'
+    </select>
+
+    <delete id="delete_polu" >
+        delete from pollution_temporary where date &lt; #{date}
+    </delete>
+
+
+</mapper>

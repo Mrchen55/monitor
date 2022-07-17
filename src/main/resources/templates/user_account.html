@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户账号信息</title>
+    <link href="/layui-v2.6.8/layui/css/layui.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<body>
+<script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/layui-v2.6.8/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var po = $("#phone01").val()
+        var em = $("#email01").val()
+        //手机号为数字
+        $("#phone01").blur(function () {
+            var emailRegExp = /\d+$/;
+            if(emailRegExp.test($("#phone01").val()) && $("#phone01").val().length==11){
+            }else {
+                $("#phone01").attr("disabled",true)
+                $("#btn2").text("点击修改")
+                alert("手机号不能为空且号码为11位数字")
+                $("#phone01").val(po)
+            }
+        })
+        //邮箱验证
+        $("#email01").blur(function () {
+            var emailRegExp = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+            if(emailRegExp.test($("#email01").val()) && $("#email01").val().trim()!==""){
+            }else {
+                $("#email01").attr("disabled",true)
+                $("#btn3").text("点击修改")
+                alert("邮箱不为空且注意格式")
+                $("#email01").val(em)
+            }
+        })
+        $("#btn1").click(function () {
+            if($("#btn1").text()=="确认"){
+                $.post("/updateMsg",{"password":$("#password01").val()},function (data) {
+                    $("#password01").attr("disabled",true)
+                    $("#btn1").text("点击修改")
+                    alert(data)
+                },"text")
+            }else {
+                $("#password01").attr("disabled",false)
+                $("#btn1").text("确认")
+            }
+        })
+        $("#btn2").click(function () {
+            if($("#btn2").text()=="确认"){
+                $.post("/updateMsg",{"phone":$("#phone01").val()},function (data) {
+                    $("#phone01").attr("disabled",true)
+                    $("#btn2").text("点击修改")
+                    alert(data)
+                },"text")
+            }else {
+                $("#phone01").attr("disabled",false)
+                $("#btn2").text("确认")
+            }
+        })
+        $("#btn3").click(function () {
+            if($("#btn3").text()=="确认"){
+                $.post("/updateMsg",{"email":$("#email01").val()},function (data) {
+                    $("#email01").attr("disabled",true)
+                    $("#btn3").text("点击修改")
+                    alert(data)
+                },"text")
+            }else {
+                $("#email01").attr("disabled",false)
+                $("#btn3").text("确认")
+            }
+        })
+    })
+
+</script>
+
+<div align="center" style="margin: 100px 0 0 0">
+    <table class="layui-table layui-font-black layui-font-20" style="width: 1000px">
+        <thead>
+            <tr align="center"><td colspan="3" style="font-size: 20px">用户账号信息</td></tr>
+        </thead>
+        <tbody >
+            <tr >
+                <td style="font-size: 20px">用户昵称 :</td>
+                <td style="font-size: 20px"><span th:text="${user.username}"></span></td>
+            </tr>
+            <tr>
+                <td style="font-size: 20px">用户密码 :</td>
+                <td style="font-size: 20px"><input type="text" id="password01" th:value="${user.password}" disabled/></td>
+                <td style="font-size: 20px"><button id="btn1" class="layui-btn">点击修改</button></td>
+            </tr>
+            <tr>
+                <td style="font-size: 20px">用户电话 :</td>
+                <td style="font-size: 20px"><input type="text" id="phone01" th:value="${user.phone}" disabled/></td>
+                <td style="font-size: 20px"><button id="btn2" class="layui-btn">点击修改</button></td>
+            </tr>
+            <tr>
+                <td style="font-size: 20px">用户邮箱:</td>
+                <td style="font-size: 20px"><input type="text" id="email01" th:value="${user.email}" disabled/></td>
+                <td style="font-size: 20px"><button id="btn3" class="layui-btn">点击修改</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="/js/effects.js" type="text/javascript"></script>
+</body>
+</html>

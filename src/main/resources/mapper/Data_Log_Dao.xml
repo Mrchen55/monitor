@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.dao.Data_Log_Dao">
+
+    <insert id="insert_message">
+        insert into data_log(date,city,monitor,message) values (#{date},#{city},#{monitor},#{message})
+    </insert>
+
+</mapper>

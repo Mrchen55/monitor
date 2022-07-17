@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.dao.Exception_message_Dao">
+
+    <insert id="insert_message">
+        insert into exception_message(date,city,monitor,message) values (#{date},#{city},#{monitor},#{message})
+    </insert>
+
+    <select id="select_ALl" resultType="com.chen.entity.Exception_message">
+        select id,date,city,monitor,message from exception_message order by date desc
+    </select>
+
+</mapper>

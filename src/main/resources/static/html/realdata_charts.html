@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图表实时污染物数据</title>
+</head>
+<script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/js/echarts.min.js"></script>
+<script type="text/javascript">
+    $(function (){
+        var date = '';
+        var monitor_point = '';
+        var hmarr;
+        $("#btn1").click(function () {
+            if($("#city").val()!==""){
+                $.post("/realdata_charts",{"city":$("#city").val()},function (data) {
+                    if(JSON.stringify(data)==="{}"){
+                        $("#main").css('display','none')
+                        data.date = "没有"
+                    }else {
+                        $("#main").css('display','block')
+                    }
+                    $("#h1").text(data.date+" "+$("#city").val()+"的实时数据")
+                    hmarr = data.hm;
+                    var index = 1;
+                    for(i in data){
+                        if(i.indexOf("arr")>=0){
+                            var myChart = echarts.init(document.getElementById('main'+index));
+                            myChart.setOption(setoption(data[i],i.replace("arr","").toLocaleUpperCase(),hmarr));
+                            index++;
+                        }
+                    }
+                },"json")
+            }else {
+                alert("请选择城市");
+            }
+
+        })
+    })
+    function setoption(args,typename,hmarr) {
+        return {
+            title: {
+                text: typename+'的实时污染物数值'
+            },
+            tooltip: {},
+            legend: {
+                right: "20%"
+            },
+            xAxis: {
+                data: hmarr
+            },
+            yAxis: {},
+            toolbox: {
+                feature: {
+                    magicType: {
+                        type: ['line', 'bar'],
+                        title: {line: '切换为折线图', bar: '切换为柱状图'}
+                    },
+                    saveAsImage: {
+                        title: '下载图片'
+                    }
+                }
+            },
+            series: [
+                {name: typename, type: 'line', data: args},
+            ]
+        }
+    }
+</script>
+<body>
+<div>
+    <span style="font-family: 宋体;font-size: 20px">选择城市：</span>&nbsp;
+    <select id="city" style="width: 110px;height: 25px">
+        <option></option>
+        <option value="江门">江门</option>
+        <option value="广州">广州</option>
+        <option value="佛山">佛山</option>
+        <option value="珠海">珠海</option>
+    </select>
+    <input id="btn1" type="button" value="确认">
+</div>
+<div>
+    <h1 style="text-align: center" id="h1">请先选择城市</h1>
+</div>
+<div id="main" style="display: none;">
+    <div id="main1" style="width: 45%;height: 400px;margin:0 auto;float: left"></div>
+    <div id="main2" style="width: 45%;height: 400px;margin:0 auto;float: right"></div>
+    <div id="main3" style="width: 45%;height: 400px;margin:0 auto;float: left"></div>
+    <div id="main4" style="width: 45%;height: 400px;margin:0 auto;float: right"></div>
+    <div id="main5" style="width: 45%;height: 400px;margin:0 auto;float: left"></div>
+    <div id="main6" style="width: 45%;height: 400px;margin:0 auto;float: right"></div>
+</div>
+</body>
+<script src="../js/effects.js" type="text/javascript"></script>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/publicUse.css" type="text/css">
+</head>
+<script src="/js/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="/layer-v3.5.1/layer/layer.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $("#btn1").click(function () {
+            layer.confirm('请选择找回密码方式。', {
+                btn: ['手机号','邮箱'] //按钮
+            }, function(){
+                layer.prompt({
+                    formType: 0,
+                    title: '请输入注册时的手机号',
+                }, function(value, index, elem){
+                    layer.close(index);
+                    var emailRegExp =/^[0-9]*[1-9][0-9]*$/;
+                    if(emailRegExp.test(value) && value.length==11){
+                        var data={}
+                        data.phone=value
+                        send_ajax(data)
+                    }else {
+                        alert("手机号错误")
+                    }
+                });
+            }, function(){
+                layer.prompt({
+                    formType: 0,
+                    title: '请输入注册时的邮箱',
+                }, function(value, index, elem){
+                    layer.close(index);
+                    var emailRegExp = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+                    if(emailRegExp.test(value) && value.trim()!==""){
+                        var data = {}
+                        data.email=value
+                        send_ajax(data)
+                    }else {
+                        alert("邮箱错误")
+                    }
+                });
+            });
+        })
+        function send_ajax(data){
+            $.ajax({
+                url: "/back_pwd",
+                type: "GET",
+                headers: {'Content-Type': 'application/json'},
+                data:data,
+                dataType:"json",
+                beforeSend: function () {
+                    loadIndex = layer.load(1, {
+                        shade: [0.1, '#fff']
+                    });
+                },
+                complete: function () {
+                    layer.close(loadIndex);
+                },
+                success: function (data) {
+                    if(data.username!=null){
+                        layer.confirm("用户名: "+data.username+"<br>密码: "+data.password)
+                        layer.msg("密码已发送到您注册时的邮箱,请注意查收",{icon: 1})
+                    }else{
+                        layer.msg("没有该用户",{icon: 2})
+                    }
+                }
+            })
+        }
+    })
+</script>
+<body style="margin:0;">
+<div class="backimg"></div>
+<div class="login">
+    <div align="center">
+        <p class="jerry">环境质量监控系统</p>
+    </div>
+    <div align="center">
+        <form action="/index" method="post">
+            <table class="tom">
+                <tr>
+                    <td>用户名：</td>
+                    <td><input type="text" name="username" size="10" class="steve"><br/></td>
+                </tr>
+                <tr>
+                    <td>密码：</td>
+                    <td><input type="password" name="password" size="10" class="steve"/><br/></td>
+                </tr>
+            </table>
+            <br>
+            <input type="submit" class="steve" name="status" value="用户登录">
+            <input type="submit" class="steve" name="status" value="游客浏览"><br>
+            <button type="button" id="btn1">忘记用户名和密码?</button><br>
+            <a href="html/register.html">若无账号，请先注册</a>
+        </form>
+    </div>
+    <br>
+    <div id="feedback" align="center" th:text="${feedback}"></div>
+    <script type="text/javascript">
+        if($("#feedback").text()!==""){
+            alert($("#feedback").text())
+        }
+    </script>
+</div>
+</body>
+<script src="/js/effects.js" type="text/javascript" color="194,0,142"></script>
+</html>

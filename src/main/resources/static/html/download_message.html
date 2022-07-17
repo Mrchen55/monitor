@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>数据下载日志</title>
+    <link href="../layui-v2.6.8/layui/css/layui.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<body>
+<script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../layui-v2.6.8/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var pageNum = 1;    //页数
+        var pageSize = 15;  // 一页几条
+        var allSize = 15;   //总数据
+        var maxpage = 3;    //最大页数
+
+        $("#btn1").click(function () {
+            $.post("/download_message",{"pageNum":pageNum,"pageSize":pageSize},
+                function (data) {
+                    $("#tbody").empty()
+                    $.each(data.list,function (index,ele) {
+                        $("#tbody").append("<tr>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.id+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.date+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.log_user+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.message+"</td>")
+                        $("#tbody").append("</tr>")
+                    })
+                    $("#span01").text("一共有"+data.Allsize+"条数据,共"+maxpage+"页,当前第"+pageNum+"页")
+                    allSize = data.Allsize;
+                    maxpage = Math.ceil(allSize/pageSize);
+
+                }, "json")
+        })
+        $("#btnup").click(function () {
+            pageNum = pageNum<=1?1:pageNum-1;
+            $("#btn1").click();
+        })
+        $("#btndown").click(function () {
+            pageNum = pageNum>=maxpage?maxpage:pageNum+1;
+            $("#btn1").click();
+        })
+        $("#selectPageNums").change(function () {
+            pageSize = $("#selectPageNums").val()
+            $("#btn1").click();
+        })
+
+    })
+</script>
+<br>
+<div>
+    <span style="font-size: 19px">管理员功能&nbsp:&nbsp</span><input id="btn1" type="button" class="layui-btn" value="查看操作日志">
+</div>
+<div align="center">
+    <br>
+    <div>
+    <h2>操作日志</h2>
+    <table id="tab" style="width: 1500px;font-size: 20px" border="1" class="layui-table layui-font-black layui-font-20" >
+        <thead style="color:rebeccapurple" align="center">
+        <tr>
+            <td style="width: 70px ;font-size: 20px">序号</td>
+            <td style="width: 300px;font-size: 20px">时间</td>
+            <td style="width: 100px;font-size: 20px">用户</td>
+            <td style="width: 700px;font-size: 20px">操作信息</td>
+        </tr>
+        </thead>
+        <tbody id="tbody" align="center">
+        </tbody>
+    </table>
+    </div>
+    <div>
+        一页显示几条:
+        <select id="selectPageNums" style="width:62px;height: 30px;font-size: 20px">
+            <option value="15" >15</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;
+        <button id="btnup"  class="layui-btn">上一页</button>
+        <button id="btndown"   class="layui-btn">下一页</button>
+        <span id="span01"></span>
+    </div>
+</div>
+
+</body>
+</html>

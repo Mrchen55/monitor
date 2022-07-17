@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据异常页面</title>
+    <link href="../layui-v2.6.8/layui/css/layui.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../layui-v2.6.8/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var pageNum = 1;    //页数
+        var pageSize = 15;  // 一页几条
+        var allSize = 15;   //总数据
+        var maxpage = 3;    //最大页数
+        $("#btn1").click(function () {
+            $.post("/data_exception",{"pageNum":pageNum,"pageSize":pageSize},
+                function (data) {
+                    $("#tbody").empty()
+                    $.each(data.list,function (index,ele) {
+                        $("#tbody").append("<tr>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.id+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.date+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.city+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.monitor+"</td>")
+                        $("#tbody").append("<td style='font-size: 18px'>"+ele.message+"</td>")
+                        $("#tbody").append("</tr>")
+                    })
+                    allSize = data.Allsize;
+                    maxpage = Math.ceil(allSize/pageSize);
+                    $("#span01").text("一共有"+data.Allsize+"条数据,共"+maxpage+"页,当前第"+pageNum+"页")
+                }, "json")
+        })
+        $("#btn1").click();
+        $("#btnup").click(function () {
+            pageNum = pageNum<=1?1:pageNum-1;
+            $("#btn1").click();
+        })
+        $("#btndown").click(function () {
+            pageNum = pageNum>=maxpage?maxpage:pageNum+1;
+            $("#btn1").click();
+        })
+        $("#selectPageNums").change(function () {
+            pageSize = $("#selectPageNums").val()
+            $("#btn1").click();
+        })
+
+    })
+</script>
+<body>
+<div align="center" style="margin: 30px 0 0 0">
+    <table class="layui-table layui-font-black layui-font-20" style="width: 1500px">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col width="100">
+            <col width="100">
+            <col style="font-size: 50px">
+        </colgroup>
+        <thead>
+            <tr>
+                <th style="text-align: center;font-size: 20px">id</th>
+                <th style="text-align: center;font-size: 20px">日期</th>
+                <th style="text-align: center;font-size: 20px">城市</th>
+                <th style="text-align: center;font-size: 20px">监测点</th>
+                <th style="text-align: center;font-size: 20px" >异常信息</th>
+            </tr>
+        </thead>
+        <tbody id="tbody" style="text-align: center" >
+        </tbody>
+    </table>
+    <br>
+    <div>
+        一页显示几条:
+        <select id="selectPageNums" style="width:62px;height: 30px;font-size: 20px">
+            <option value="15" >15</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;
+        <button id="btnup"  class="layui-btn">上一页</button>
+        <button id="btndown"   class="layui-btn">下一页</button>
+        <span id="span01"></span>
+    </div>
+</div>
+<button id="btn1" style="display: none">3</button>
+</body>
+</html>

@@ -1,0 +1,10 @@
+/*点击菜单，选中状态效果*/
+#home:target ~ #link-home,
+#app-version:target ~ #header #navigation #link-portfolio,
+#app-config:target ~ #header #navigation #link-cpmfig,
+#app-changelog:target ~ #header #navigation #link-contact,
+#app-infomation:target ~ #header #navigation #link-infomation,
+#about:target ~ #header #navigation #link-about{
+    background: #333;
+    color: #fff;
+}

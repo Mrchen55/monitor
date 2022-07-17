@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>空气质量情况</title>
+</head>
+<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/echarts.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var data = new Array()
+        data.push($("#so2").text())
+        data.push($("#no2").text())
+        data.push($("#pm2_5").text())
+        data.push($("#pm10").text())
+        data.push($("#co").text())
+        data.push($("#o3").text())
+        var xaxis = ["so2","no2","pm2.5","pm10","co","o3"]
+        var myChart = echarts.init(document.getElementById('charts'));
+        myChart.setOption(getOption(xaxis,data))
+        function getOption(xaxis,data){
+            return{
+                title: {
+                },
+                tooltip: {"textStyle": {
+                        "fontSize": 18
+                    }},
+                legend: {
+                    name:'最近一小时污染物均值',
+                    "textStyle": {
+                        "fontSize": 18
+                    }},
+                xAxis: {
+                    data: xaxis,
+                    axisLabel: {
+                        fontSize:'17',
+                        fontFamily:'微软雅黑',
+                        marginTop:'35px',
+                        show:true,
+                    },
+                },
+                yAxis: {
+                    axisLabel: {
+                        fontSize:'18',
+                        fontFamily:'微软雅黑',
+                        marginTop:'35px',
+                        show:true,
+                    },
+                },
+                toolbox:{
+                    feature:{
+                        magicType: {
+                            type: ['line', 'bar'],
+                            title:{line:'切换为折线图',bar:'切换为柱状图'}
+                        },
+                        saveAsImage:{
+                            title:'下载图片'
+                        }
+                    }
+                },
+                series: [
+                    {name: '最近一小时污染物均值',type: 'bar',data: data}
+                ]
+            }
+        }
+    })
+</script>
+<body>
+<div style="padding: 10px 20px 50px 20px;">
+    <div id="nav1" style="font-size: 20px;width: 100%;height: 350px;">
+        <div style="background-color: #f6fff5;width: 30%;height: 85%;float: left;padding: 15px">
+            <form action="/airquality" method="get">
+                选择城市：&nbsp;
+                <select name="city" style="width: 110px;height: 25px">
+                    <option></option>
+                    <option value="江门">江门</option>
+                    <option value="广州">广州</option>
+                    <option value="佛山">佛山</option>
+                    <option value="珠海">珠海</option>
+                </select>
+                <input type="submit" value="确认">
+            </form>
+            <h1><span id="spa" th:text="${city_aqi.city}">0</span>空气情况</h1>
+            监测地点：<span th:text="${city_aqi.monitor_point}">0</span><br>
+            监测时间：<span th:text="${city_aqi.date}">0</span><br>
+            主要污染物：<span th:text="${data_maxname}">0</span><br>
+            <span th:if="${0<=city_aqi.aqi   && city_aqi.aqi<=50}">空气质量：优 &nbsp;<input type="color" value="#00ff0d" disabled/></span>
+            <span th:if="${50<city_aqi.aqi  && city_aqi.aqi<=100}">空气质量：良 &nbsp;<input type="color" value="#ffff00" disabled/></span>
+            <span th:if="${100<city_aqi.aqi && city_aqi.aqi<=150}">空气质量：轻度污染 &nbsp;<input type="color" value="#ffa500" disabled/></span>
+            <span th:if="${150<city_aqi.aqi && city_aqi.aqi<=200}">空气质量：中度污染 &nbsp;<input type="color" value="#ff0000" disabled/></span>
+            <span th:if="${200<city_aqi.aqi && city_aqi.aqi<=300}">空气质量：重度污染 &nbsp;<input type="color" value="#800080" disabled/></span>
+            <span th:if="${300<city_aqi.aqi}">空气质量：严重污染&nbsp;<input type="color" value="#800000" disabled/></span>
+            <br>
+            最近一个小时的空气质量数值是<span id="spa" th:text="${city_aqi.aqi}">aqi的值</span><br>
+            各项污染物的最近一个小时的均值。<br><br><br><br>
+        </div>
+        <div style="width: 1%;height: 80%;float: left"></div>
+        <div style="background-color: #fff9ef;width: 30%;height: 80%;float: left;padding: 50px 0 0 0">
+            <table border="1" align="center" >
+                <thead>
+                <tr>
+                    <th>污染物</th>
+                    <th>最近一小时污染物的均值</th>
+                </tr>
+                </thead>
+                <tbody align="center">
+                <tr>
+                    <td>SO2(μg/h)</td>
+                    <td><span id="so2" th:text="${city_aqi.SO2_Mean}">0</span></td>
+                </tr>
+                <tr>
+                    <td>NO2(μg/h)</td>
+                    <td><span id="no2" th:text="${city_aqi.NO2_Mean}">0</span></td>
+                </tr>
+                <tr>
+                    <td>PM2.5(μg/h)</td>
+                    <td><span id="pm2_5" th:text="${city_aqi.PM2_5_Mean}">0</span></td>
+                </tr>
+                <tr>
+                    <td>PM10(μg/h)</td>
+                    <td><span id="pm10" th:text="${city_aqi.PM10_Mean}">0</span></td>
+                </tr>
+                <tr>
+                    <td>CO(mg/h)</td>
+                    <td><span id="co" th:text="${city_aqi.CO_Mean}">0</span></td>
+                </tr>
+                <tr>
+                    <td>O3(μg/h)</td>
+                    <td><span id="o3" th:text="${city_aqi.o3_Mean}">0</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="width: 1%;height: 80%;float: left"></div>
+        <div id="charts" style="width: 30%;height: 95%;float: left;padding: 40px 0 0 0">
+        </div>
+    </div>
+    <br>
+    <div style="background-color: #eff9ff;width: 30%;">
+    <table>
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+        <tr><th colspan="3">关于空气质量指数对应的环境质量和颜色</th></tr>
+        <tr>
+            <th>Aqi</th>
+            <th>质量指数类别 </th>
+            <th>颜色</th>
+        </tr>
+        </thead>
+        <tbody align="center">
+        <tr>
+            <td>0-50</td>
+            <td>优</td>
+            <td style="text-align: right">绿色&nbsp;<input type="color" value="#00ff0d" disabled/></td>
+        </tr>
+        <tr>
+            <td>51-10</td>
+            <td>良</td>
+            <td style="text-align: right">黄色&nbsp;<input type="color" value="#ffff00" disabled/></td>
+        </tr>
+        <tr>
+            <td>101-150</td>
+            <td>轻度污染</td>
+            <td style="text-align: right">橙色&nbsp;<input type="color" value="#ffa500" disabled/></td>
+        </tr>
+        <tr>
+            <td>151-200</td>
+            <td>中度污染</td>
+            <td style="text-align: right">红色&nbsp;<input type="color" value="#ff0000" disabled/></td>
+        </tr>
+        <tr>
+            <td>201-300</td>
+            <td>重度污染</td>
+            <td style="text-align: right">紫色 &nbsp;<input type="color" value="#800080" disabled/></td>
+        </tr>
+        <tr>
+            <td>>300</td>
+            <td>严重污染</td>
+            <td style="text-align: right">褐红色<input type="color" value="#800000" disabled/></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</body>
+<script src="/js/effects.js" type="text/javascript"></script>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+    <link href="../css/publicUse.css" rel="stylesheet" type="text/css" >
+</head>
+<script src="../js/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="../js/jquery.table2excel.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        //用户名不为空
+        $("#username").blur(function () {
+            if($("#username").val().trim() !=="" && $("#username").val().length<=20){
+                $("#username_err").text("正确")
+            }else {
+                $("#username_err").text("用户名不为空且小于20个字符")
+            }
+        })
+        //密码验证
+        $("#again_password").blur(function () {
+            if( $("#again_password").val().trim()!==""){
+                if($("#again_password").val()===$("#password").val()){
+                    $("#password_err").text("正确")
+                }else{
+                    $("#password_err").text("两次密码不一致")
+                }
+            }else {
+                $("#password_err").text("密码不为空")
+            }
+        })
+        //手机号为数字
+        $("#user_phone").blur(function () {
+            var emailRegExp =/^[0-9]*[1-9][0-9]*$/;
+            if(emailRegExp.test($("#user_phone").val()) && $("#user_phone").val().length==11){
+                $("#phone_err").text("正确")
+            }else {
+                $("#phone_err").text("手机号不能为空且号码为11位数字")
+            }
+        })
+        //邮箱验证
+        $("#user_email").blur(function () {
+            var emailRegExp = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+            if(emailRegExp.test($("#user_email").val()) && $("#user_email").val().trim()!==""){
+                $("#email_err").text("正确")
+
+            }else {
+                $("#email_err").text("邮箱不为空且注意格式")
+            }
+        })
+        //发送注册请求
+        $("#submitBut").click(function () {
+            $("#username").blur();
+            $("#again_password").blur();
+            $("#user_phone").blur();
+            $("#user_email").blur();
+            if($("#username_err").text()==="正确" && $("#password_err").text()==="正确"
+                && $("#phone_err").text()==="正确" && $("#email_err").text()==="正确"){
+                //$.get(url,data,function(data,status,xhr),dataType)
+                $.get({
+                    url:"/user_register",
+                    data: {
+                        "username":$("#username").val(),
+                        "password":$("#password").val(),
+                        "user_phone":$("#user_phone").val(),
+                        "email":$("#user_email").val()
+                    },
+                    success:function(data){
+                        alert(data)
+                        $("#feedback").text(data)
+                    },
+                    dataType:"text"
+                })
+            }else {
+                alert("注册失败，请输入正确的注册信息")
+            }
+        })
+
+
+    $('#btn1').click(function () {
+        // input 动态赋值
+        $("#haha tr td").each(function (i,ele) {
+            if ($(this).find('input').length) {
+                $(this).find('input').attr('value',$(this).find('input').val())
+            }
+        })
+        $("#haha").table2excel({ //这里要选择table标签 我这里是用id选择 也可$('table').table2excel()
+            exclude: ".noExl",
+            // 导出的Excel文档的名称
+            name: "表格-" + new Date().getTime(),
+            // Excel文件的名称
+            filename: "待定",
+            //文件后缀名
+            fileext: ".xls",
+            //是否导出图片
+            exclude_img: false,
+            //是否导出超链接
+            exclude_links: false,
+            //是否导出输入框中的内容
+            exclude_inputs: true
+        });
+    });
+
+
+})
+</script>
+<body class="allbodycolor" style="background-image: url('../images/001.jpg')">
+<div align="center">
+    <p class="jerry">环境质量在线监控系统</p>
+    <table cellSpacing="1" cellPadding="1" width="180" align="center" >
+        <tr valign="bottom">
+            <td class="tom"><a href="/login">返回登录页面</a></td>
+        </tr>
+    </table>
+    <br>
+</div>
+<div align="center">
+        <table class="ok" id="haha">
+            <tr>
+                <td>*用户名*：</td>
+                <td><input type="text" id="username" name="id" class="steve" value=""/></td>
+                <td id="username_err" class="palevioletred"></td>
+            </tr>
+            <tr>
+                <td >*用户密码*：</td>
+                <td><input type="password" id="password" name="password" class="steve"/></td>
+            </tr>
+            <tr>
+                <td >*重复密码*</td>
+                <td><input type="password" id="again_password" name="again_password" class="steve"/></td>
+                <td id="password_err" class="palevioletred"></td>
+            </tr>
+            <tr>
+                <td>*联系电话*:</td>
+                <td><input type="text" id="user_phone" name="phone" class="steve"/></td>
+                <td id="phone_err" class="palevioletred"></td>
+            </tr>
+            <tr>
+                <td>*邮箱地址*：</td>
+                <td><input type="text" id="user_email" name="address" class="steve"/></td>
+                <td id="email_err" class="palevioletred"></td>
+            </tr>
+        </table>
+        <input type="button" value="注册" id="submitBut" class="steve" />
+        <input type="reset" value="重置" class="steve"/>
+<!--        <input type="button" id="btn1" value="导出" class="steve"/>-->
+        <p class="redColor">*注意事项：每一项都要填写，电话必须为数字,名字不能为空。</p>
+
+</div>
+
+<div align="center" >
+    注册反馈：<span id="feedback" class="blueColor"></span>
+</div>
+</body>
+<script src="../js/effects.js" type="text/javascript"></script>
+</html>

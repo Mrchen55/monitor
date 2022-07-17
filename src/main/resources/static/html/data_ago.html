@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>以往污染物数据</title>
+</head>
+<body>
+<script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btn1").click(function () {
+            $.post("/data_ago",{"city":$("#city").val(),"form_date":$("#form_date").val()},
+                function (data) {
+                    $("#tbody").empty()
+                    if(data.length === 0){
+                        $("#tbody").append("<tr><td colspan='10' align='center'>空的，请选择其他日期或城市</td></tr>>")
+                        $("#length01").text("")
+                        $("#condition01").css("display","none")
+                    }else {
+                        $("#length01").text("一共有"+data.length+"条数据")
+                        $("#condition01").css("display","block")
+                    }
+                    $.each(data,function (index,ele) {
+                        insert_table(ele)
+                    })
+                }, "json")
+        })
+        $("#query").click(function () {
+            var i = /^[0-9]*[1-9][0-9]*$/;
+            var value01 = parseInt($("#cndvalue01").val())
+            var value02 = parseInt($("#cndvalue02").val())
+            // alert(i+"="+i.test(value01))
+            if(i.test($("#cndvalue01").val()) && i.test($("#cndvalue02").val()) && value01<value02){
+                $.post("/rangequery",{"city":$("#city").val(),"form_date":$("#form_date").val(),"first":value01,"end":value02},
+                    function (data) {
+                        alert("查询成功")
+                        $("#tbody").empty()
+                        if(data.length === 0){
+                            $("#tbody").append("<tr><td colspan='10' align='center'>空的，请重新选择范围</td></tr>>")
+                            $("#length01").text("")
+                        }else {
+                            $("#length01").text("一共有"+data.length+"条数据")
+                        }
+                        $.each(data,function (index,ele) {
+                            insert_table(ele)
+                        })
+                    },"json")
+            }else {
+                alert("请输入两个正数并且左小右大")
+            }
+        })
+        $("#maxAqi").click(function () {
+            $.post("/maxquery",{"city":$("#city").val(),"form_date":$("#form_date").val()},
+                function (data){
+                    alert("查询成功")
+                    $("#tbody").empty()
+                    if(data.length === 0){
+                        $("#tbody").append("<tr><td colspan='10' align='center'>空的，当天没有数据</td></tr>>")
+                    }else {
+                        insert_table(data)
+                        $("#length01").text("一共有1条数据")
+                    }
+
+                },"json")
+        })
+        function insert_table(ele) {
+            $("#tbody").append("<tr>")
+            $("#tbody").append("<td>"+ele.date+"</td>")
+            $("#tbody").append("<td>"+ele.city+"</td>")
+            $("#tbody").append("<td>"+ele.monitor_point+"</td>")
+            $("#tbody").append("<td>"+ele.aqi+"</td>")
+            $("#tbody").append("<td>"+ele.so2_Mean+"</td>")
+            $("#tbody").append("<td>"+ele.no2_Mean+"</td>")
+            $("#tbody").append("<td>"+ele.pm10_Mean+"</td>")
+            $("#tbody").append("<td>"+ele.pm2_5_Mean+"</td>")
+            $("#tbody").append("<td>"+ele.o3_Mean+"</td>")
+            $("#tbody").append("<td>"+ele.co_Mean+"</td>")
+            $("#tbody").append("</tr>")
+        }
+    })
+</script>
+<div>
+    <form>
+        <span style="font-family: 宋体;font-size: 20px">选择城市和时间：</span>&nbsp;
+        <select id="city" style="width:100px;height: 30px">
+            <option ></option>
+            <option value="江门">江门</option>
+            <option value="佛山">佛山</option>
+            <option value="珠海">珠海</option>
+            <option value="广州">广州</option>
+        </select>
+        <input type="date" id="form_date" >
+        <input id="btn1" type="button" value="确认">
+        <div style="display: none" id="condition01">
+            <span style="font-size: 20px">筛选空气质量指数的取值范围:</span>
+            <input id="cndvalue01" style="width:80px;height: 20px" type="text" size="5"/>~<input id="cndvalue02" style="width:80px;height: 20px" type="text" size="5"/>
+            <button type="button" style="width:50px;height: 30px" id="query">查询</button><br>
+            <input id="maxAqi" style="width:200px;height: 30px" type="button" value="查询空气质量指数最大值">
+        </div>
+    </form>
+</div>
+<div align="center">
+    <br>
+    <div>历史空气质量指数数据、污染物每小时平均值数据</div>
+    <table id="tab" style="font-size: 20px" border="1">
+        <thead style="color:rebeccapurple" align="center">
+        <tr>
+            <td style="width: 300px">时间</td>
+            <td style="width: 100px">城市</td>
+            <td style="width: 100px">监测点</td>
+            <td style="width: 100px">AQI</td>
+            <td style="width: 60px">SO2(μg/h)</td>
+            <td style="width: 60px">NO2(μg/h)</td>
+            <td style="width: 60px">PM10(μg/h)</td>
+            <td style="width: 60px">PM2.5(μg/h)</td>
+            <td style="width: 60px">O3(μg/h)</td>
+            <td style="width: 60px">CO(mg/h)</td>
+        </tr>
+        </thead>
+        <tbody id="tbody" align="center">
+        <tr id="tr01"><td colspan="10" align="center">当前没有城市选择</td></tr>
+        </tbody>
+    </table>
+    <div id="length01" style="font-size: 25px"></div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+
+</body>
+<script src="../js/effects.js" type="text/javascript"></script>
+</html>
